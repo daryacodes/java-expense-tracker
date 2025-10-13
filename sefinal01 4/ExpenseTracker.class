@@ -1,0 +1,329 @@
+// Source code is decompiled from a .class file using FernFlower decompiler (from Intellij IDEA).
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Scanner;
+
+public class ExpenseTracker {
+   private ArrayList<Expense> expenses = new ArrayList();
+
+   public ExpenseTracker() {
+   }
+
+   public void addExpense() {
+      Scanner scanner = new Scanner(System.in);
+      SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+      sdf.setLenient(false);
+      String date = "";
+
+      while(true) {
+         System.out.print("Enter the date (dd/MM/yyyy): ");
+         date = scanner.nextLine();
+
+         try {
+            sdf.parse(date);
+            break;
+         } catch (ParseException var14) {
+            System.out.println("Invalid date! Please use format dd/MM/yyyy.");
+         }
+      }
+
+      String category = "";
+
+      while(true) {
+         System.out.print("Pick a category: 'Food', 'Transport', 'Entertainment': ");
+         category = scanner.nextLine();
+         if (category.equalsIgnoreCase("Food") || category.equalsIgnoreCase("Transport") || category.equalsIgnoreCase("Entertainment")) {
+            double amount = 0.0;
+
+            String description;
+            while(true) {
+               System.out.print("Please enter amount: ");
+               description = scanner.nextLine();
+
+               try {
+                  amount = Double.parseDouble(description);
+                  if (!(amount < 0.0)) {
+                     break;
+                  }
+
+                  System.out.println("Amount cannot be negative!");
+               } catch (NumberFormatException var13) {
+                  System.out.println("Invalid amount! Please enter a valid number.");
+               }
+            }
+
+            description = "";
+
+            while(true) {
+               System.out.print("Enter a description: ");
+               description = scanner.nextLine();
+               if (!description.isEmpty()) {
+                  String referenceCode = "";
+
+                  while(true) {
+                     System.out.print("Enter reference code: ");
+                     referenceCode = scanner.nextLine();
+                     if (!referenceCode.isEmpty()) {
+                        System.out.print("Enter vendor name: ");
+                        String vendorName = scanner.nextLine();
+                        System.out.print("Enter payment method (e.g., Cash, Card): ");
+                        String paymentMethod = scanner.nextLine();
+                        String taxIncl = "";
+
+                        while(true) {
+                           System.out.print("Was tax included? Yes or No: ");
+                           taxIncl = scanner.nextLine();
+                           if (taxIncl.equalsIgnoreCase("Yes") || taxIncl.equalsIgnoreCase("No")) {
+                              Expense newExpense = new Expense(amount, category, date, description, referenceCode, vendorName, paymentMethod, taxIncl);
+                              this.expenses.add(newExpense);
+                              System.out.println("Expense added successfully. Total: " + this.expenses.size());
+                              return;
+                           }
+
+                           System.out.println("Tax included can ONLY be Yes or No");
+                        }
+                     }
+
+                     System.out.println("Reference code must not be empty!");
+                  }
+               }
+
+               System.out.println("Description must not be empty!");
+            }
+         }
+
+         System.out.println("Invalid category! Please choose only 'Food', 'Transport', or 'Entertainment'.");
+      }
+   }
+
+   public void deleteExpense() {
+      if (this.expenses.isEmpty()) {
+         System.out.println("No expenses to delete !");
+      } else {
+         Scanner scanner = new Scanner(System.in);
+         System.out.println("Enter the reference code of the expense to delete: ");
+
+         int index;
+         for(index = 0; index < this.expenses.size(); ++index) {
+            System.out.println(index + 1 + ". " + ((Expense)this.expenses.get(index)).toString());
+         }
+
+         System.out.print("Enter the number of the expense to delete: ");
+         if (!scanner.hasNextInt()) {
+            System.out.println("Invalid input ! Please enter a number: ");
+            scanner.nextLine();
+         }
+
+         index = scanner.nextInt();
+         scanner.nextLine();
+         if (index >= 1 && index <= this.expenses.size()) {
+            this.expenses.remove(index - 1);
+            System.out.println("Expense deleted successfully.");
+         } else {
+            System.out.println("Invalid choice. Please try again !");
+         }
+      }
+   }
+
+   public int getCount() {
+      return this.expenses.size();
+   }
+
+   public void editExpense() {
+      if (this.expenses.isEmpty()) {
+         System.out.println("No expenses to edit.");
+      } else {
+         Scanner scanner = new Scanner(System.in);
+         System.out.println("Select the expense number to edit:");
+
+         int index;
+         for(index = 0; index < this.expenses.size(); ++index) {
+            System.out.println(index + 1 + ". " + ((Expense)this.expenses.get(index)).toString());
+         }
+
+         index = scanner.nextInt();
+         scanner.nextLine();
+         if (index >= 1 && index <= this.expenses.size()) {
+            Expense selectedExpense = (Expense)this.expenses.get(index - 1);
+            System.out.print("Enter new amount (current: $" + selectedExpense.getAmount() + "): ");
+            double newAmount = scanner.nextDouble();
+            scanner.nextLine();
+            if (newAmount >= 0.0) {
+               selectedExpense.setAmount(newAmount);
+            }
+
+            System.out.print("Enter new description (current: " + selectedExpense.getDescription() + "): ");
+            String newDescription = scanner.nextLine();
+            if (!newDescription.isEmpty()) {
+               selectedExpense.setDescription(newDescription);
+            }
+
+            System.out.println("Expense updated successfully!");
+         } else {
+            System.out.println("Invalid expense number.");
+         }
+      }
+   }
+
+   public void summariseByDate() {
+      Scanner sc = new Scanner(System.in);
+      System.out.print("Please entr DATE to summarise: dd/mm/yyyy");
+      String date = sc.nextLine();
+      double total = 0.0;
+      boolean found = false;
+      Iterator var6 = this.expenses.iterator();
+
+      while(var6.hasNext()) {
+         Expense e = (Expense)var6.next();
+         if (e.getDate().equals(date)) {
+            System.out.println(e.toString());
+            total += e.getAmount();
+            found = true;
+         }
+      }
+
+      if (!found) {
+         System.out.println("Expenses NOT found for: " + date);
+      } else {
+         System.out.println("Total expenses for " + date + ": $" + total);
+      }
+
+   }
+
+   public void summariseByCategory() {
+      Scanner sc = new Scanner(System.in);
+      System.out.print("Enter the CATEGORY to summarise: ");
+      String category = sc.nextLine();
+      double total = 0.0;
+      boolean found = false;
+      Iterator var6 = this.expenses.iterator();
+
+      while(var6.hasNext()) {
+         Expense e = (Expense)var6.next();
+         if (e.getCategory().equalsIgnoreCase(category)) {
+            System.out.println(e.toString());
+            total += e.getAmount();
+            found = true;
+         }
+      }
+
+      if (!found) {
+         System.out.println("Expenses NOT found for: " + category);
+      } else {
+         System.out.println("Total expenses for " + category + ": $" + total);
+      }
+
+   }
+
+   public void saveToFile(String filename) {
+      try {
+         PrintWriter writer = new PrintWriter(new FileWriter(filename));
+
+         try {
+            Iterator var3 = this.expenses.iterator();
+
+            while(true) {
+               if (!var3.hasNext()) {
+                  System.out.println("Expenses successfully saved to file: " + filename);
+                  break;
+               }
+
+               Expense e = (Expense)var3.next();
+               String var10001 = e.getDate();
+               writer.println(var10001 + "," + e.getCategory() + "," + e.getDescription() + "," + e.getAmount() + "," + e.getreferenceCode() + "," + e.getvendorName() + "," + e.getpaymentMethod() + "," + e.gettaxIncl());
+            }
+         } catch (Throwable var6) {
+            try {
+               writer.close();
+            } catch (Throwable var5) {
+               var6.addSuppressed(var5);
+            }
+
+            throw var6;
+         }
+
+         writer.close();
+      } catch (IOException var7) {
+         System.out.println("Error saving expenses to file: " + var7.getMessage());
+      }
+
+   }
+
+   public void loadExpensesFromFile(String filename) {
+      this.expenses.clear();
+
+      try {
+         Scanner scanner = new Scanner(new File(filename));
+
+         try {
+            while(scanner.hasNextLine()) {
+               String line = scanner.nextLine();
+               String[] parts = line.split(",");
+               if (parts.length == 8) {
+                  String date = parts[0];
+                  String category = parts[1];
+                  String description = parts[2];
+                  double amount = Double.parseDouble(parts[3]);
+                  String referenceCode = parts[4];
+                  String vendorName = parts[5];
+                  String paymentMethod = parts[6];
+                  String taxIncl = parts[7];
+                  Expense expense = new Expense(amount, category, date, description, referenceCode, vendorName, paymentMethod, taxIncl);
+                  this.expenses.add(expense);
+               }
+            }
+
+            System.out.println("Expenses loaded from file: " + filename);
+         } catch (Throwable var16) {
+            try {
+               scanner.close();
+            } catch (Throwable var15) {
+               var16.addSuppressed(var15);
+            }
+
+            throw var16;
+         }
+
+         scanner.close();
+      } catch (FileNotFoundException var17) {
+         System.out.println("Error loading expenses from file: " + var17.getMessage());
+      }
+
+   }
+
+   public void viewAllExpenses() {
+      if (this.expenses.isEmpty()) {
+         System.out.println("No expenses are recorded yet !");
+      } else {
+         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+         sdf.setLenient(false);
+         this.expenses.sort((e1, e2) -> {
+            try {
+               Date date1 = sdf.parse(e1.getDate());
+               Date date2 = sdf.parse(e2.getDate());
+               return date1.compareTo(date2);
+            } catch (ParseException var5) {
+               System.out.println("Error parsing date: " + var5.getMessage());
+               throw new IllegalArgumentException("Invalid date format: " + e1.getDate());
+            }
+         });
+         double total = 0.0;
+
+         Expense e;
+         for(Iterator var4 = this.expenses.iterator(); var4.hasNext(); total += e.getAmount()) {
+            e = (Expense)var4.next();
+            System.out.println(e.toString());
+         }
+
+         System.out.println("Total expenses: $" + total);
+      }
+   }
+}

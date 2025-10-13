@@ -1,0 +1,95 @@
+// Source code is decompiled from a .class file using FernFlower decompiler (from Intellij IDEA).
+public class Expense {
+   private double amount;
+   private String category;
+   private String date;
+   private String description;
+   private String referenceCode;
+   private String vendorName;
+   private String paymentMethod;
+   private String taxIncl;
+
+   public Expense(double var1, String var3, String var4, String var5, String var6, String var7, String var8, String var9) {
+      this.amount = var1;
+      this.category = var3;
+      this.date = var4;
+      this.description = var5;
+      this.referenceCode = var6;
+      this.vendorName = var7;
+      this.paymentMethod = var8;
+      this.taxIncl = var9;
+   }
+
+   public String toString() {
+      return "Expense: $" + this.amount + " - " + this.category + " - " + this.date + " - " + this.description + " - REF:" + this.referenceCode + " - Vendor name: " + this.vendorName + " - Method of Pay: " + this.paymentMethod + " - Tax Included? " + this.taxIncl;
+   }
+
+   public double getAmount() {
+      return this.amount;
+   }
+
+   public void setAmount(double var1) {
+      if (var1 < 0.0) {
+         System.out.println("Please enter a non-negative number: ");
+      } else {
+         this.amount = var1;
+      }
+
+   }
+
+   public String getDate() {
+      return this.date;
+   }
+
+   public void setDate(String var1) {
+      this.date = var1;
+   }
+
+   public String getCategory() {
+      return this.category;
+   }
+
+   public void setCategory(String var1) {
+      this.category = var1;
+   }
+
+   public String getDescription() {
+      return this.description;
+   }
+
+   public void setDescription(String var1) {
+      this.description = var1;
+   }
+
+   public String getreferenceCode() {
+      return this.referenceCode;
+   }
+
+   public void setreferenceCode(String var1) {
+      this.referenceCode = var1;
+   }
+
+   public String getvendorName() {
+      return this.vendorName;
+   }
+
+   public void setvendorName(String var1) {
+      this.vendorName = var1;
+   }
+
+   public String getpaymentMethod() {
+      return this.paymentMethod;
+   }
+
+   public void setpaymentMethod(String var1) {
+      this.paymentMethod = var1;
+   }
+
+   public String gettaxIncl() {
+      return this.taxIncl;
+   }
+
+   public void settaxIncl(String var1) {
+      this.taxIncl = var1;
+   }
+}

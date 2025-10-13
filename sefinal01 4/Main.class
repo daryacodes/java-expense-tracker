@@ -1,0 +1,65 @@
+// Source code is decompiled from a .class file using FernFlower decompiler (from Intellij IDEA).
+import java.util.Scanner;
+
+public class Main {
+   public Main() {
+   }
+
+   public static void main(String[] args) {
+      ExpenseTracker tracker = new ExpenseTracker();
+      boolean exit = false;
+      Scanner scanner = new Scanner(System.in);
+
+      while(!exit) {
+         int choice = 0;
+
+         while(choice != 7) {
+            System.out.println("\n ~~ Expense Tracker Menu ~~");
+            System.out.println("1. Add an expense");
+            System.out.println("2. View all expenses recorded");
+            System.out.println("3. Edit an expense");
+            System.out.println("4. Delete an expense");
+            System.out.println("5. Summarise by date");
+            System.out.println("6. Summarise by category");
+            System.out.println("7. Exit menu");
+            System.out.print("Please choose an option: ");
+            if (scanner.hasNextInt()) {
+               choice = scanner.nextInt();
+               scanner.nextLine();
+               switch (choice) {
+                  case 1:
+                     tracker.addExpense();
+                     break;
+                  case 2:
+                     tracker.viewAllExpenses();
+                     break;
+                  case 3:
+                     tracker.editExpense();
+                     break;
+                  case 4:
+                     tracker.deleteExpense();
+                     break;
+                  case 5:
+                     tracker.summariseByDate();
+                     break;
+                  case 6:
+                     tracker.summariseByCategory();
+                     break;
+                  case 7:
+                     exit = true;
+                     System.out.println("Exiting the menu... Thank you !");
+                     break;
+                  default:
+                     System.out.println("Invalid choice --> please try again !");
+               }
+            } else {
+               System.out.println("Error ! Please enter a number");
+               scanner.nextLine();
+            }
+         }
+
+         scanner.close();
+      }
+
+   }
+}
